@@ -1,0 +1,37 @@
+#+title: Readme
+
+* Dotfiles Linux
+Mi nueva configuracion para usar un gestor de ventanas en arch y derivadas (tambien para Fedora)
+** Rices
+*** Arch + Hyprland
+
+[[file:images/20231208-162538_2023-12-08-122758_hyprshot.png]]
+
+**** Overview
+- **OS**: Arch Linux
+- **Compositor**: [Hyprland](https://github.com/hyprwm/Hyprland)
+- **Top- and sidebar**: [eww](https://github.com/elkowar/eww)
+- **Notifications**: [dunst](https://github.com/dunst-project/dunst)
+- **Wallpaper Loader**: [swww](https://github.com/Horus645/swww)
+- **Wallpaper**: `/themes/apatheia/wallpapers`
+- **Terminal**: [Alacritty](https://github.com/kovidgoyal/kitty)
+- **Search menu**: [wofi](https://github.com/uncomfyhalomacro/wofi)
+- **Fetch script**: `nitch`
+- **Browser**: Firefox
+- **Font**: [Nerd Font](https://www.nerdfonts.com/)
+
+** Custom widgets
+*** Rofi
+
+<https://github.com/adi1090x/rofi>
+
+Install theme manually in /usr/share/rofi/themes
+
+*** Neovim Custom
+
+<https://github.com/pojokcodeid>
+
+Install cutom Nvims with de pojokCode configurations
+Comming soon... uwu
+
+You have to break my hearth
