@@ -1,4 +1,4 @@
-#+title: Dotfiles Linux
+#+title: Dotfiles Linux 🦄
 
 Mi nueva configuracion para usar un gestor de ventanas en arch y derivadas (tambien para Fedora)
 ** Rices
@@ -21,16 +21,12 @@ Mi nueva configuracion para usar un gestor de ventanas en arch y derivadas (tamb
 
 ** Custom widgets
 *** Rofi
-
-<https://github.com/adi1090x/rofi>
-
 Install theme manually in /usr/share/rofi/themes
++ [[<https://github.com/adi1090x/rofi>][Rofi themes]]
 
 *** Neovim Custom
-
-<https://github.com/pojokcodeid>
-
 Install cutom Nvims with de pojokCode configurations
-Comming soon... uwu
++ [[<https://github.com/pojokcodeid>][PojokCode]]
 
+Comming soon... uwu
 You have to break my hearth
