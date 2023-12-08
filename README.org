@@ -22,11 +22,10 @@ Mi nueva configuracion para usar un gestor de ventanas en arch y derivadas (tamb
 ** Custom widgets
 *** Rofi
 Install theme manually in /usr/share/rofi/themes
-+ [[<https://github.com/adi1090x/rofi>][Rofi themes]]
++ [[https://github.com/adi1090x/rofi][Rofi themes]]
 
 *** Neovim Custom
 Install cutom Nvims with de pojokCode configurations
-+ [[<https://github.com/pojokcodeid>][PojokCode]]
-
++ [[https://github.com/pojokcodeid][PojokCode]]
 Comming soon... uwu
 You have to break my hearth
