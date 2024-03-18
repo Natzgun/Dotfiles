@@ -24,8 +24,8 @@
 ;;
                                         ; (setq doom-unicode-font (font-spec :family "SauceCodePro Nerd Font Mono" :size 15)
                                         ;       doom-variable-pitch-font (font-spec :family "Ubuntu" :size 14))
-(setq doom-font (font-spec :family "Maple Mono NF" :weight 'Regular :size 17))
-                                        ; (setq doom-font (font-spec :family "JetBrainsMono Nerd Font" :weight 'SemiBold :size 16))
+;; (setq doom-font (font-spec :family "Maple Mono NF" :weight 'Regular :size 17))
+(setq doom-font (font-spec :family "JetBrainsMono Nerd Font" :weight 'SemiBold :size 11.5))
 ;;
 ;; If you or Emacs can't find your font, use 'M-x describe-font' to look them
 ;; up, `M-x eval-region' to execute elisp code, and 'M-x doom/reload-font' to
@@ -220,6 +220,12 @@
 ;;         "C-c l a y" #'zz/org-download-paste-clipboard
 ;;         "C-M-y" #'zz/org-download-paste-clipboard))
 
+;; MAGICK for support images
+(use-package image
+  :ensure t
+  :init
+  (setq image-default-program "magick") ; Reemplaza 'magick' con el nombre del programa de conversión que hayas instalado
+  )
 
 ;; ORG AGENDA CONFIG
 (after! org

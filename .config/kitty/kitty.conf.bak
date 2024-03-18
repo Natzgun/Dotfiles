@@ -2,13 +2,18 @@ enable_audio_bell no
 include ./Themes/Natzgun.conf
 ; include color.ini
 
-font_family      CaskaydiaCove Nerd Font Mono
+; font_family      CaskaydiaCove Nerd Font Mono
+font_family      Maple Mono NF Regular
+; font_family      FantasqueSansM Nerd Font Mono Regular
+; font_family      FiraCode Nerd Font Mono SemiBold
 font_size 13
 
 disable_ligatures never
 # url_color #61afef
 
 url_style curly
+
+window_padding_width 4
 
 cursor_shape beam
 cursor_beam_thickness 4
@@ -26,6 +31,6 @@ shell fish
 
 
 # BEGIN_KITTY_THEME
-# moonlight
+# purpurite
 include current-theme.conf
 # END_KITTY_THEME

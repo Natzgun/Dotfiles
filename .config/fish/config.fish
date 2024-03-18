@@ -34,6 +34,6 @@ if status is-interactive
 end
 
 function fish_greeting
-  # pfetch
-  neofetch
+  pfetch
+  # neofetch
 end
