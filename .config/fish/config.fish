@@ -24,16 +24,26 @@ if status is-interactive
   # Path for Emacs
   set -x PATH "$HOME/.config/emacs/bin" $PATH
 
+  # Flutter
+
+  set -x PATH "$HOME/development/flutter/bin" $PATH
+
   # Path for TexLive LATEX
   set -x PATH "/usr/local/texlive/2023/bin/x86_64-linux" $PATH
   set -x MANPATH "/usr/local/texlive/2023/texmf-dist/doc/man" $MANPATH
   set -x INFOPATH "/usr/local/texlive/2023/texmf-dist/doc/info" $INFOPATH
+
+  # FOR MANUAL
+  set -gx MANPATH "/usr/share/man" $MANPATH
    #Pfetch config
+  # JAVA
+  set -x PATH "/usr/lib/jvm/java-21-openjdk/bin" $PATH
   set -x PF_ASCII arch
   starship init fish | source
 end
 
 function fish_greeting
-  pfetch
+  # pfetch
   # neofetch
+  colorscript random
 end
