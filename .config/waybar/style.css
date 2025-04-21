@@ -1,311 +1,170 @@
+/*
+     ___                    _     __    _     
+    /   |  _  _____  ____  (_)___/ /__ ( )_____
+   / /| | | |/_/ _ \/ __ \/ / __  / _ \|// ___/
+  / ___ |_>  </  __/ / / / / /_/ /  __/ (__  )
+ /_/  |_/_/|_|\___/_/ /_/_/\__,_/\___/ /____/ 
+ | |     / /___ ___  __/ /_  ____ ______      
+ | | /| / / __ `/ / / / __ \/ __ `/ ___/      
+ | |/ |/ / /_/ / /_/ / /_/ / /_/ / /          
+ |__/|__/\__,_/\__, /_.___/\__,_/_/           
+              /____/                          
+
+ https://github.com/Axenide/Dotfiles
+*/
+
+@import "axgruv.css";
+
 * {
-  /* `otf-font-awesome` is required to be installed for icons */
-  font-family: JetBrainsMono Nerd Font;
-  font-size: 14px;
+	border: none;
+	border-radius: 0px;
+	font-family: 'Iosevka Nerd Font';
+	font-size: 11pt;
+	font-style: normal;
+	min-height: 0;
 }
 
 window#waybar {
-  background-color: rgba(26, 27, 38, 0.5);
-  color: #ffffff;
-  transition-property: background-color;
-  transition-duration: 0.5s;
-  border-top: 8px transparent;
-  border-radius: 8px;
-  transition-duration: 0.5s;
-  margin: 16px 16px;
+	background: transparent;
+	/* border: 2px solid @brblack; */
+	/* border-radius: 10px; */
+	/* color: @white; */
 }
 
-window#waybar.hidden {
-  opacity: 0.2;
+#workspaces {
+  background: black;
+  border-radius: 10px;
+  padding: 5px 8px;
+  margin: 10px;
+  box-shadow: 0px 0px 3px rgba(0,0,0,1);
+  border: 1px solid @black;
 }
 
 #workspaces button {
-  padding: 0 5px;
-  color: #7984A4;
-  background-color: transparent;
-  /* Use box-shadow instead of border so the text isn't offset */
-  box-shadow: inset 0 -3px transparent;
-  /* Avoid rounded borders under each workspace name */
-  border: none;
-  border-radius: 0;
+	border-radius: 0px;
+	color: @white;
+	/* transition: all 0.25s ease-in-out; */
 }
 
-#workspaces button.focused {
-  color: #bf616a;
+#workspaces button.persistent {
+	color: @white;
+}
+
+#workspaces button.empty {
+    color: @brblack;
 }
 
 #workspaces button.active {
-  color: #6a92d7;
+  color: @brgreen;
+  text-shadow:
+    0.25px 0.25px 0 @brgreen,
+    -0.25px 0.25px 0 @brgreen,
+    -0.25px -0.25px 0 @brgreen,
+    0.25px -0.25px 0 @brgreen;
 }
 
-#workspaces button.urgent {
-  background-color: #eb4d4b;
+#workspaces button:hover {
+	background-color: transparent;
+	color: @brgreen;
 }
 
-#window {
-  /* border-radius: 20px; */
-  /* padding-left: 10px; */
-  /* padding-right: 10px; */
-  color: #64727d;
-}
-
-#clock,
-#battery,
-#cpu,
-#memory,
-#disk,
-#temperature,
-#backlight,
-#network,
-#pulseaudio,
-#custom-media,
-#tray,
-#mode,
-#idle_inhibitor,
-#mpd,
-#bluetooth,
-#custom-hyprPicker,
-#custom-power-menu,
-#custom-spotify,
-#custom-weather,
-#custom-weather.severe,
-#custom-weather.sunnyDay,
-#custom-weather.clearNight,
-#custom-weather.cloudyFoggyDay,
-#custom-weather.cloudyFoggyNight,
-#custom-weather.rainyDay,
-#custom-weather.rainyNight,
-#custom-weather.showyIcyDay,
-#custom-weather.snowyIcyNight,
-#custom-weather.default {
-  padding: 0 10px;
-  color: #e5e5e5;
-  /* color: #bf616a; */
-  border-radius: 9.5px;
-  background-color: #1f2530;
-}
-
-#window,
-#workspaces {
-  margin: 0 4px;
-  border-radius: 7.8px;
-  background-color: #1f2530;
-}
-
-#cpu {
-  color: #fb958b;
-  background-color: #1f2530;
-}
-
-#memory {
-  color: #ebcb8b;
-  background-color: #1f2530;
-}
-
-#custom-power-menu {
-  border-radius: 9.5px;
-  background-color: #1b242b;
-  border-radius: 7.5px;
-  padding: 0 5px;
-}
-
-#custom-launcher {
-  background-color: #1b242b;
-  color: #6a92d7;
-  border-radius: 7.5px;
-  padding: 0 3px;
-}
-
-#custom-weather.severe {
-  color: #eb937d;
-}
-
-#custom-weather.sunnyDay {
-  color: #c2ca76;
-}
-
-#custom-weather.clearNight {
-  color: #cad3f5;
-}
-
-#custom-weather.cloudyFoggyDay,
-#custom-weather.cloudyFoggyNight {
-  color: #c2ddda;
-}
-
-#custom-weather.rainyDay,
-#custom-weather.rainyNight {
-  color: #5aaca5;
-}
-
-#custom-weather.showyIcyDay,
-#custom-weather.snowyIcyNight {
-  color: #d6e7e5;
-}
-
-#custom-weather.default {
-  color: #dbd9d8;
-}
-
-/* If workspaces is the leftmost module, omit left margin */
-.modules-left > widget:first-child > #workspaces {
-  margin-left: 0;
-}
-
-/* If workspaces is the rightmost module, omit right margin */
-.modules-right > widget:last-child > #workspaces {
-  margin-right: 0;
-}
-
-#pulseaudio {
-  color: #7d9bba;
-}
-
-#backlight {
-  /* color: #EBCB8B; */
-  color: #8fbcbb;
+#tray {
+	padding: 5px 10px;
+	margin: 10px 5px;
+  background: black;
+  border-radius: 10px;
+  box-shadow: 0px 0px 3px rgba(0,0,0,1);
+  border: 1px solid @black;
 }
 
 #clock {
-  color: #c8d2e0;
-  /* background-color: #14141e; */
+	color: @brgreen;
+  background: black;
+  border-radius: 10px;
+	padding: 5px 14px;
+	margin: 10px 10px 10px 0px;
+	font-weight: bold;
+  box-shadow: 0px 0px 3px rgba(0,0,0,1);
+  border: 1px solid @black;
 }
 
-#battery {
-  color: #c0caf5;
-  /* background-color: #90b1b1; */
+#custom-launcher {
+	color: @red;
+	background: black;
+  border-radius: 10px;
+	font-family: 'Symbols Nerd Font';
+	font-size: 20px;
+	padding: 8px 11px 8px 11px;
+  margin: 10px 0px 10px 10px;
+  box-shadow: 0px 0px 3px rgba(0,0,0,1);
+  border: 1px solid @black;
 }
 
-#battery.charging,
-#battery.full,
-#battery.plugged {
-  color: #26a65b;
-  /* background-color: #26a65b; */
+#custom-playerctl {
+	font-weight: bold;
+  /* font-style: italic; */
+  background: black;
+  color: @white;
+  padding: 5px 14px;
+  margin: 10px 5px;
+  border-radius: 10px;
+  box-shadow: 0px 0px 3px rgba(0,0,0,1);
+  border: 1px solid @black;
 }
 
-@keyframes blink {
-  to {
-    background-color: rgba(30, 34, 42, 0.5);
-    color: #abb2bf;
-  }
+#cpu, #memory, #disk, #custom-gpu-usage {
+	background-color: #000000;
+	border-radius: 16px;
+	margin: 9px;
+	padding: 0px 8px;
+	font-weight: bold;
+	border: solid 2px @black;
+	box-shadow: 0px 0px 3px rgba(0,0,0,1);
+	text-shadow: 0px 0px 3px @white;
+  border: 1px solid @black;
 }
 
-#battery.critical:not(.charging) {
-  color: #f53c3c;
-  animation-name: blink;
-  animation-duration: 0.5s;
-  animation-timing-function: linear;
-  animation-iteration-count: infinite;
-  animation-direction: alternate;
+#custom-hyprpicker, #bluetooth, #network, #pulseaudio, #backlight, #battery, #custom-notifications {
+	color: @white;
+	font-family: 'Symbols Nerd Font';
+	font-size: 10pt;
+	margin: 0;
+	padding: 0 10px;
 }
 
-label:focus {
-  background-color: #000000;
+/* #custom-hyprpicker { */
+/*   background: linear-gradient(to left, transparent, @black); */
+/*   border-radius: 100px 0 0 100px; */
+/*   border-top: solid 3px transparent; */
+/*   border-bottom: solid 3px transparent; */
+/*   padding-left: 15px; */
+/* } */
+
+#bluetooth.connected {
+	color: @brgreen;
 }
 
-#disk {
-  background-color: #964b00;
+#bluetooth.off {
+	color: @brblack;
 }
 
-#bluetooth {
-  color: #707d9d;
+#pulseaudio.muted {
+	color: @brblack;
 }
 
-#bluetooth.disconnected {
-  color: #f53c3c;
+#battery.charging {
+	color: @brgreen;
 }
 
-#network {
-  color: #b48ead;
+#battery.warning:not(.charging) {
+	color: @red;
 }
 
-#network.disconnected {
-  color: #f53c3c;
-}
-
-#custom-media {
-  background-color: #66cc99;
-  color: #2a5c45;
-  min-width: 100px;
-}
-
-#custom-media.custom-spotify {
-  background-color: #66cc99;
-}
-
-#custom-media.custom-vlc {
-  background-color: #ffa000;
-}
-
-#temperature {
-  background-color: #f0932b;
-}
-
-#temperature.critical {
-  background-color: #eb4d4b;
-}
-
-#tray > .passive {
-  -gtk-icon-effect: dim;
-}
-
-#tray > .needs-attention {
-  -gtk-icon-effect: highlight;
-  background-color: #eb4d4b;
-}
-
-#idle_inhibitor {
-  background-color: #2d3436;
-}
-
-#idle_inhibitor.activated {
-  background-color: #ecf0f1;
-  color: #2d3436;
-}
-
-#mpd {
-  color: #2a5c45;
-}
-
-#mpd.disconnected {
-  color: #f53c3c;
-}
-
-#mpd.stopped {
-  color: #90b1b1;
-}
-
-#mpd.paused {
-  color: #51a37a;
-}
-
-#language {
-  background: #00b093;
-  color: #740864;
-  padding: 0 5px;
-  margin: 0 5px;
-  min-width: 16px;
-}
-
-#keyboard-state {
-  background: #97e1ad;
-  color: #000000;
-  padding: 0 0px;
-  margin: 0 5px;
-  min-width: 16px;
-}
-
-#keyboard-state > label {
-  padding: 0 5px;
-}
-
-#custom-spotify {
-  padding: 0 10px;
-  margin: 0 4px;
-  /* background-color: #1db954; */
-  color: #abb2bf;
-}
-
-#keyboard-state > label.locked {
-  background: rgba(0, 0, 0, 0.2);
+#group-applets {
+  background: black;
+  border-radius: 10px;
+  padding: 5px 8px;
+  margin: 10px 10px 10px 5px;
+  box-shadow: 0px 0px 3px rgba(0,0,0,1);
+  border: 1px solid @black;
 }
