@@ -49,9 +49,24 @@
 ;; ...Or *all* packages (NOT RECOMMENDED; will likely break things)
                                         ;(unpin! t)
 
-(package! copilot
-  :recipe (:host github :repo "zerolfx/copilot.el" :files ("*.el" "dist")))
+;; (package! copilot
+;;   :recipe (:host github :repo "zerolfx/copilot.el" :files ("*.el" "dist")))
 
 (package! darkroom)
 
 (package! org-download)
+
+(package! xenops)
+
+(package! gruvbox-theme)
+
+(package! treesit-auto)
+
+(package! ccls)
+
+(package! company-tabnine)
+
+(unpin! org-roam)
+(package! org-roam-ui)
+
+(package! websocket)

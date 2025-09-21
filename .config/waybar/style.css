@@ -16,19 +16,19 @@
 @import "axgruv.css";
 
 * {
-	border: none;
-	border-radius: 0px;
-	font-family: 'Iosevka Nerd Font';
-	font-size: 11pt;
-	font-style: normal;
-	min-height: 0;
+  border: none;
+  border-radius: 0px;
+  font-family: 'Iosevka Nerd Font';
+  font-size: 11pt;
+  font-style: normal;
+  min-height: 0;
 }
 
 window#waybar {
-	background: transparent;
-	/* border: 2px solid @brblack; */
-	/* border-radius: 10px; */
-	/* color: @white; */
+  background: transparent;
+  /* border: 2px solid @brblack; */
+  /* border-radius: 10px; */
+  /* color: @white; */
 }
 
 #workspaces {
@@ -36,22 +36,22 @@ window#waybar {
   border-radius: 10px;
   padding: 5px 8px;
   margin: 10px;
-  box-shadow: 0px 0px 3px rgba(0,0,0,1);
+  box-shadow: 0px 0px 3px rgba(0, 0, 0, 1);
   border: 1px solid @black;
 }
 
 #workspaces button {
-	border-radius: 0px;
-	color: @white;
-	/* transition: all 0.25s ease-in-out; */
+  border-radius: 0px;
+  color: @white;
+  /* transition: all 0.25s ease-in-out; */
 }
 
 #workspaces button.persistent {
-	color: @white;
+  color: @white;
 }
 
 #workspaces button.empty {
-    color: @brblack;
+  color: @brblack;
 }
 
 #workspaces button.active {
@@ -64,72 +64,81 @@ window#waybar {
 }
 
 #workspaces button:hover {
-	background-color: transparent;
-	color: @brgreen;
+  background-color: transparent;
+  color: @brgreen;
 }
 
 #tray {
-	padding: 5px 10px;
-	margin: 10px 5px;
+  padding: 5px 10px;
+  margin: 10px 5px;
   background: black;
   border-radius: 10px;
-  box-shadow: 0px 0px 3px rgba(0,0,0,1);
+  box-shadow: 0px 0px 3px rgba(0, 0, 0, 1);
   border: 1px solid @black;
 }
 
 #clock {
-	color: @brgreen;
+  color: @brgreen;
   background: black;
   border-radius: 10px;
-	padding: 5px 14px;
-	margin: 10px 10px 10px 0px;
-	font-weight: bold;
-  box-shadow: 0px 0px 3px rgba(0,0,0,1);
+  padding: 5px 14px;
+  margin: 10px 10px 10px 0px;
+  font-weight: bold;
+  box-shadow: 0px 0px 3px rgba(0, 0, 0, 1);
   border: 1px solid @black;
 }
 
 #custom-launcher {
-	color: @red;
-	background: black;
+  color: @red;
+  background: black;
   border-radius: 10px;
-	font-family: 'Symbols Nerd Font';
-	font-size: 20px;
-	padding: 8px 11px 8px 11px;
+  font-family: 'Symbols Nerd Font';
+  font-size: 20px;
+  padding: 8px 11px 8px 11px;
   margin: 10px 0px 10px 10px;
-  box-shadow: 0px 0px 3px rgba(0,0,0,1);
+  box-shadow: 0px 0px 3px rgba(0, 0, 0, 1);
   border: 1px solid @black;
 }
 
 #custom-playerctl {
-	font-weight: bold;
+  font-weight: bold;
   /* font-style: italic; */
   background: black;
   color: @white;
   padding: 5px 14px;
   margin: 10px 5px;
   border-radius: 10px;
-  box-shadow: 0px 0px 3px rgba(0,0,0,1);
+  box-shadow: 0px 0px 3px rgba(0, 0, 0, 1);
   border: 1px solid @black;
 }
 
-#cpu, #memory, #disk, #custom-gpu-usage {
-	background-color: #000000;
-	border-radius: 16px;
-	margin: 9px;
-	padding: 0px 8px;
-	font-weight: bold;
-	border: solid 2px @black;
-	box-shadow: 0px 0px 3px rgba(0,0,0,1);
-	text-shadow: 0px 0px 3px @white;
+#cpu,
+#memory,
+#disk,
+#custom-gpu-usage {
+  background-color: #000000;
+  border-radius: 16px;
+  margin: 9px;
+  padding: 0px 8px;
+  font-weight: bold;
+  border: solid 2px @black;
+  box-shadow: 0px 0px 3px rgba(0, 0, 0, 1);
+  text-shadow: 0px 0px 3px @white;
   border: 1px solid @black;
 }
 
-#custom-hyprpicker, #bluetooth, #network, #pulseaudio, #backlight, #battery, #custom-notifications {
-	color: @white;
-	font-family: 'Symbols Nerd Font';
-	font-size: 10pt;
-	margin: 0;
-	padding: 0 10px;
+#custom-hyprpicker,
+#bluetooth,
+#network,
+#pulseaudio,
+#backlight,
+#battery,
+#custom-notifications {
+  color: @white;
+  font-family: 'Symbols Nerd Font';
+  font-size: 10pt;
+  margin: 0;
+  padding: 0 10px;
 }
 
 /* #custom-hyprpicker { */
@@ -141,23 +150,23 @@ window#waybar {
 /* } */
 
 #bluetooth.connected {
-	color: @brgreen;
+  color: @brgreen;
 }
 
 #bluetooth.off {
-	color: @brblack;
+  color: @brblack;
 }
 
 #pulseaudio.muted {
-	color: @brblack;
+  color: @brblack;
 }
 
 #battery.charging {
-	color: @brgreen;
+  color: @brgreen;
 }
 
 #battery.warning:not(.charging) {
-	color: @red;
+  color: @red;
 }
 
 #group-applets {
@@ -165,6 +174,6 @@ window#waybar {
   border-radius: 10px;
   padding: 5px 8px;
   margin: 10px 10px 10px 5px;
-  box-shadow: 0px 0px 3px rgba(0,0,0,1);
+  box-shadow: 0px 0px 3px rgba(0, 0, 0, 1);
   border: 1px solid @black;
 }

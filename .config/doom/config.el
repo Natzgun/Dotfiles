@@ -25,7 +25,20 @@
                                         ; (setq doom-unicode-font (font-spec :family "SauceCodePro Nerd Font Mono" :size 15)
                                         ;       doom-variable-pitch-font (font-spec :family "Ubuntu" :size 14))
 ;; (setq doom-font (font-spec :family "Maple Mono NF" :weight 'Regular :size 17))
-(setq doom-font (font-spec :family "JetBrainsMono Nerd Font" :weight 'SemiBold :size 11.5))
+;; (setq doom-font (font-spec :family "JetBrainsMono Nerd Font" :weight 'SemiBold :size 11.5))
+(setq doom-font (font-spec :family "IosevkaTerm Nerd Font" :size 18))
+
+;; (setq doom-font (font-spec :family "FiraCode Nerd Font Mono" :size 12.5)
+;;       doom-variable-pitch-font (font-spec :family "Noto Sans" :size 15))
+
+(after! doom-themes
+  (setq doom-themes-enable-bold t
+        doom-themes-enable-italic t))
+
+(custom-set-faces!
+  '(font-lock-comment-face :slant italic)
+  '(font-lock-keyword-face :slant italic))
+
 ;;
 ;; If you or Emacs can't find your font, use 'M-x describe-font' to look them
 ;; up, `M-x eval-region' to execute elisp code, and 'M-x doom/reload-font' to
@@ -35,7 +48,9 @@
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
+;; (setq doom-theme 'doom-moonlight)
 (setq doom-theme 'doom-horizon)
+(add-to-list 'default-frame-alist '(alpha . 90))
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
@@ -79,33 +94,47 @@
 ;; they are implemented.
 
 ;; Treesitter
-(use-package tree-sitter-langs :ensure t)
+;; (use-package tree-sitter-langs :ensure t)
 
-(use-package tree-sitter
-  :ensure t
-  :after tree-sitter-langs
-  :config
-  (global-tree-sitter-mode)
-  (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
+;; (use-package tree-sitter
+;;   :ensure t
+;;   :after tree-sitter-langs
+;;   :config
+;;   (global-tree-sitter-mode)
+;;   (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
 
 ;; Delete autosave WorkSpaces
 (setq +workspaces-autosave-when-idle nil)
 
-;; Set Tabs for Spaces
-;; (use-package smart-tabs-mode
-;;   :commands (smart-tabs-mode)
-;;   :init
-;;   (add-hook 'c-mode-common-hook #'smart-tabs-mode)
-;;   :config
-;;   (smart-tabs-advice c-indent-line     c-basic-offset)
-;;   (smart-tabs-advice c-indent-region   c-basic-offset)
-;;   )
+;; INDENTATION
 
-(setq-default tab-width 2)
+(setq-default tab-width 4)
+(setq-default indent-tabs-mode nil)
 
-(defun jpk/c-mode-common-hook ()
-  (setq tab-width 2))
-(add-hook 'c-mode-common-hook #'jpk/c-mode-common-hook)
+;; Indentation for c and c++
+(add-hook 'c-mode-hook
+          (lambda ()
+            (setq c-basic-offset 4)      ;; Indentación de 4 espacios
+            (c-set-style "k&r")))       ;; Estilo Kernighan & Ritchie
+
+;; Configuración para C++
+(add-hook 'c++-mode-hook
+          (lambda ()
+            (setq c-basic-offset 4)      ;; Indentación de 4 espacios
+            (c-set-style "stroustrup"))) ;; Estilo Stroustrup
+
+(after! lsp-mode
+  (setq lsp-enable-on-type-formatting nil)  ;; Desactiva el formato en tiempo real
+  (setq lsp-enable-indentation nil))        ;; Desactiva la indentación automática del LSP
+
+
+;; (after! c-mode
+;;   (setq c-basic-offset 2))
+
+;; (after! cpp-mode
+;;   (setq c-basic-offset 2))
+
+
 
 ;; Github Copilot
 ;; accept completion from copilot and fallback to company
@@ -141,24 +170,37 @@
 ;; ORG ROAM
 ;; (setq org-directory "~/ORG/OrgNotes")
 ;; (setq org-agenda-files "~/ORG/OrgNotes")
-;; (use-package org-roam
-;;   :ensure t
-;;   :init
-;;   (setq org-roam-v2-ack t)
-;;   (setq org-roam-include-todo t)
-;;   :custom
-;;   (org-roam-directory "~/ORG/RoamNotes")
-;;   (org-roam-complete-everywhere t)
-;;   :bind (("C-c n l" . org-roam-buffer-toggle)
-;;          ("C-c n f" . org-roam-node-find)
-;;          ("C-c n i" . org-roam-node-insert)
-;;          :map org-mode-map
-;;          ("C-M-i"   . completion-at-point)
-;;          ("C-c n g" . org-roam-graph)
-;;          ("C-c n c" . org-roam-capture)
-;;          ("C-c n j" . org-roam-dailies-capture-today))
-;;   :config
-;;   (org-roam-db-autosync-enable))
+(use-package! org-roam
+  :ensure t
+  :init
+  (setq org-roam-v2-ack t)
+  (setq org-roam-include-todo t)
+  :custom
+  (org-roam-directory "~/ORG/RoamNotes")
+  (org-roam-complete-everywhere t)
+  :bind (("C-c n l" . org-roam-buffer-toggle)
+         ("C-c n f" . org-roam-node-find)
+         ("C-c n i" . org-roam-node-insert)
+         :map org-mode-map
+         ("C-c i" . completion-at-point)
+         ("C-c n g" . org-roam-graph)
+         ("C-c n c" . org-roam-capture)
+         ("C-c n j" . org-roam-dailies-capture-today))
+  :config
+  (org-roam-db-autosync-enable))
+
+(use-package! websocket
+  :after org-roam)
+
+(use-package! org-roam-ui
+  :after org-roam
+  :config
+  (setq org-roam-ui-sync-theme t
+        org-roam-ui-follow t
+        org-roam-ui-update-on-save t
+        org-roam-ui-open-on-start t))
+
+
 
 ;; WRITING FOCUS MODE DARKROOM
 (use-package darkroom
@@ -229,7 +271,7 @@
 
 ;; ORG AGENDA CONFIG
 (after! org
-  (setq org-agenda-files '("~/ORG/OrgNotes/AgendaORG/Agenda.org")))
+  (setq org-agenda-files '("~/ORG/OrgNotes/AgendaORG/Agenda2025.org")))
 (setq
  ;; org-fancy-priorities-list '("[A]" "[B]" "[C]")
  ;; org-fancy-priorities-list '("❗" "[B]" "[C]")
@@ -258,3 +300,39 @@
 
 ;;           (agenda "")
 ;;           (alltodo "")))))
+
+
+;; EMACS OPACITY WITH HYPRLAND
+                                        ; (set-frame-parameter nil 'alpha-background 92) ; For current frame
+                                        ; (add-to-list 'default-frame-alist '(alpha-background . 92)) ; For all new frames henceforth
+
+;; (defun toggle-transparency ()
+;;   (interactive)
+;;   (let ((alpha (frame-parameter nil 'alpha)))
+;;     (set-frame-parameter
+;;      nil 'alpha
+;;      (if (eql (cond ((numberp alpha) alpha)
+;;                     ((numberp (cdr alpha)) (cdr alpha))
+;;                     ;; Also handle undocumented (<active> <inactive>) form.
+;;                     ((numberp (cadr alpha)) (cadr alpha)))
+;;               100)
+;;          '(85 . 50) '(100 . 100)))))
+;; (global-set-key (kbd "C-c t") 'toggle-transparency)
+;;
+
+;; (doom/set-frame-opacity 92)
+
+(with-eval-after-load 'ox-latex
+  (add-to-list 'org-latex-classes
+               '("templateEPCC"
+                 "\\documentclass{templateEPCC} ")))
+
+
+(setq +latex-viewers '(pdf-tools))
+(setq lsp-tex-server 'digestif)
+
+
+;; Best TreeSitter Modern
+;; (use-package treesit-auto
+;;   :config
+;;   (global-treesit-auto-mode))

@@ -1,0 +1,25 @@
+{
+	"name": "Competitive-Programming-snippets",
+	"contributes": {
+		"snippets": [
+			{
+				"language": [
+					"all"
+				],
+				"path": "./snippets/all.json"
+			},
+			{
+				"language": [
+					"lua"
+				],
+				"path": "./lua.json"
+			},
+			{
+				"language": [
+					"cpp"
+				],
+				"path": "./cpp.json"
+			}
+		]
+	}
+}

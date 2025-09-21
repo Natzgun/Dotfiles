@@ -37,7 +37,7 @@ if status is-interactive
     set -x CPATH /usr/include/opencv4 $CPATH
 
     # Nvim Swticher
-    alias nvim-chad="env NVIM_APPNAME=NvChad nvim"
+    alias nvchad="env NVIM_APPNAME=NvChad nvim"
     alias lvm="env NVIM_APPNAME=LazyVim nvim"
     alias nvim-kick="env NVIM_APPNAME=kickstart nvim"
     alias nvim-astro="env NVIM_APPNAME=AstroNvim nvim"

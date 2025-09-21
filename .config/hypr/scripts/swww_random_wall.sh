@@ -6,6 +6,11 @@ INTERVAL=240
 
 ALLOWED_EXTENSIONS=("jpg" "jpeg" "png")
 
+if ! pgrep -x "swww-daemon" > /dev/null; then
+    swww-daemon &
+    sleep 1
+fi
+
 while true; do
     # Find images
     images=()

@@ -1,0 +1,70 @@
+{
+  "Input from stdin (cin)": {
+    "prefix": "cin",
+    "body": [
+      "std::cin >> $1;"
+    ],
+    "description": "Input from stdin (cin)"
+  },
+  "Output to stdout (cout)": {
+    "prefix": "cout",
+    "body": [
+      "std::cout << $1 << std::endl;"
+    ],
+    "description": "Output to stdout (cout)"
+  },
+  "Output to stdout (cout without endl)": {
+    "prefix": "coutn",
+    "body": [
+      "std::cout << $1;"
+    ],
+    "description": "Output to stdout (cout without endl)"
+  },
+  "Include iostream": {
+    "prefix": "include",
+    "body": [
+      "#include <iostream>"
+    ],
+    "description": "Include iostream"
+  },
+  "Using namespace std": {
+    "prefix": "usingns",
+    "body": [
+      "using namespace std;"
+    ],
+    "description": "Using namespace std"
+  },
+  "Define a macro": {
+    "prefix": "define",
+    "body": [
+      "#define ${1:name} ${2:value}"
+    ],
+    "description": "Define a macro basic"
+  },
+  "Competitive Programming Template": {
+    "prefix": "pc1",
+    "body": [
+      "#include <iostream>",
+      "#include <string>",
+      "#include <vector>",
+      "using namespace std;",
+      "",
+      "#define FOR(i, start, end) for (int i = (start); i < (end); i++)",
+      "#define ll long long",
+      "#define pii pair<int, int>",
+      "#define pll pair<ll, ll>",
+      "#define vi vector<int>",
+      "#define vvi vector<vector<int>>",
+      "",
+      "int main() {",
+        "  std::cin.tie(0);",
+        "  std::ios_base::sync_with_stdio(0);",
+        "",
+        "  $0",
+        "",
+        "  return 0;",
+        "}"
+    ],
+    "description": "Competitive Programming Template"
+  }
+}
