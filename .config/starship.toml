@@ -32,7 +32,7 @@ style_user = "bold purple"
 format = "[ 󰣇 $user ]($style)"
 
 [character]
-success_symbol = "[ ⋊>](bold blue)"
+success_symbol = "[ ⋊>](bold red)"
 error_symbol = "[](bold red)"
 
 [directory.substitutions]

@@ -69,7 +69,7 @@ if status is-interactive
     set -gx MANPATH /usr/share/man $MANPATH
     #Pfetch config
     # JAVA
-    set -x PATH /usr/lib/jvm/java-21-openjdk/bin $PATH
+    # set -x PATH /usr/lib/jvm/java-21-openjdk/bin $PATH
     set -x PF_ASCII arch
     starship init fish | source
 end
@@ -90,3 +90,10 @@ end
 # bun
 set --export BUN_INSTALL "$HOME/.bun"
 set --export PATH $BUN_INSTALL/bin $PATH
+
+# >>> mamba initialize >>>
+# !! Contents within this block are managed by 'micromamba shell init' !!
+set -gx MAMBA_EXE "/usr/bin/micromamba"
+set -gx MAMBA_ROOT_PREFIX "/home/natzgun/.local/share/mamba"
+$MAMBA_EXE shell hook --shell fish --root-prefix $MAMBA_ROOT_PREFIX | source
+# <<< mamba initialize <<<

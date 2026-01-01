@@ -4,16 +4,15 @@ local servers = {
         "clangd",
         "lua_ls",
         "glsl_analyzer",
-        -- "gopls",
+        "gopls",
+        "golangci_lint_ls",
         -- "hls"
     },
 }
-
 vim.lsp.enable(servers.simple)
 
---  C++ and C
+-- C++ and C
 require("cmake-tools").setup({})
-
 vim.lsp.config("clangd", {
     on_attach = function(client, bufnr)
         client.server_capabilities.documentFormattingProvider = false
@@ -23,7 +22,6 @@ vim.lsp.config("clangd", {
     root_dir = vim.fs.root(0, { "CMakeLists.txt", ".git" }),
 })
 vim.lsp.enable("clangd")
-
 
 -- LUA
 vim.lsp.config("lua_ls", {
@@ -45,5 +43,47 @@ vim.lsp.config("lua_ls", {
     },
 })
 vim.lsp.enable("lua_ls")
+
+-- GO
+vim.lsp.config("gopls", {
+    cmd = { "gopls" },
+    filetypes = { "go", "gomod", "gowork", "gotmpl" },
+    root_dir = vim.fs.root(0, { "go.work", "go.mod", ".git" }),
+    settings = {
+        gopls = {
+            analyses = {
+                unusedparams = true,
+                shadow = true,
+            },
+            staticcheck = true,
+            gofumpt = true,
+        },
+    },
+})
+vim.lsp.enable("gopls")
+
+-- GO Linter (golangci-lint)
+vim.lsp.config("golangci_lint_ls", {
+    cmd = { "golangci-lint-langserver" },
+    filetypes = { "go", "gomod" },
+    root_dir = vim.fs.root(0, { 
+        ".golangci.yml", 
+        ".golangci.yaml", 
+        ".golangci.toml", 
+        ".golangci.json", 
+        "go.work", 
+        "go.mod", 
+        ".git" 
+    }),
+    init_options = {
+        command = { 
+            "golangci-lint", 
+            "run", 
+            "--output.json.path=stdout", 
+            "--show-stats=false" 
+        },
+    },
+})
+vim.lsp.enable("golangci_lint_ls")
 
 return servers

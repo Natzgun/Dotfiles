@@ -26,7 +26,7 @@
                                         ;       doom-variable-pitch-font (font-spec :family "Ubuntu" :size 14))
 ;; (setq doom-font (font-spec :family "Maple Mono NF" :weight 'Regular :size 17))
 ;; (setq doom-font (font-spec :family "JetBrainsMono Nerd Font" :weight 'SemiBold :size 11.5))
-(setq doom-font (font-spec :family "IosevkaTerm Nerd Font" :size 18))
+(setq doom-font (font-spec :family "IosevkaTerm Nerd Font" :weight 'Semibold :size 18))
 
 ;; (setq doom-font (font-spec :family "FiraCode Nerd Font Mono" :size 12.5)
 ;;       doom-variable-pitch-font (font-spec :family "Noto Sans" :size 15))
@@ -271,11 +271,11 @@
 
 ;; ORG AGENDA CONFIG
 (after! org
-  (setq org-agenda-files '("~/ORG/OrgNotes/AgendaORG/Agenda2025.org")))
+  (setq org-agenda-files '("~/ORG/OrgNotes/AgendaORG/Agenda2025B.org")))
 (setq
  ;; org-fancy-priorities-list '("[A]" "[B]" "[C]")
  ;; org-fancy-priorities-list '("❗" "[B]" "[C]")
- ;; org-fancy-priorities-list '("🟥" "🟧" "🟨")
+ org-fancy-priorities-list '("🟥" "🟧" "🟨")
  org-priority-faces
  '((?A :foreground "#ff6c6b" :weight bold)
    (?B :foreground "#98be65" :weight bold)
@@ -300,6 +300,24 @@
 
 ;;           (agenda "")
 ;;           (alltodo "")))))
+
+(setq org-agenda-custom-commands
+      '(("v" "A better agenda view"
+         ((tags-todo "PRIORITY=\"A\""
+                     ((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
+                      (org-agenda-overriding-header "High-priority unfinished tasks:")))
+          (tags-todo "PRIORITY=\"B\""
+                     ((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
+                      (org-agenda-overriding-header "Medium-priority unfinished tasks:")))
+          (tags-todo "PRIORITY=\"C\""
+                     ((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
+                      (org-agenda-overriding-header "Low-priority unfinished tasks:")))
+          (tags-todo "customtag"
+                     ((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
+                      (org-agenda-overriding-header "Tasks marked with customtag:")))
+
+          (agenda "")
+          (alltodo "")))))
 
 
 ;; EMACS OPACITY WITH HYPRLAND
