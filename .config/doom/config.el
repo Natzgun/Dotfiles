@@ -50,7 +50,7 @@
 ;; `load-theme' function. This is the default:
 ;; (setq doom-theme 'doom-moonlight)
 (setq doom-theme 'doom-horizon)
-(add-to-list 'default-frame-alist '(alpha . 90))
+;; (add-to-list 'default-frame-alist '(alpha-background . 90))
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
