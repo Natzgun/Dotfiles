@@ -4,20 +4,20 @@ if status is-interactive
     set fish_greeting ""
     alias grep "grep --color=auto"
     alias cat "bat --style=plain --paging=never"
-    alias ls "exa --group-directories-first"
-    alias ll "exa --group-directories-first -la"
+    alias ls "eza --group-directories-first"
+    alias ll "eza --group-directories-first -la"
     alias py python3
-    alias tree "exa -T"
+    alias tree "eza -T"
     alias tm tmux
-    alias vim nvim
+    # alias vim nvim
     alias em "emacs -nw"
     #alias nvim "lvim"
     set -x PATH "$HOME/.cargo/env" $PATH
     set -x PATH "$HOME/.cargo/bin" $PATH
     set -x PATH "$HOME/.local/bin" $PATH
-    set -x PATH "$HOME/.nvm/versions/node/v18.12.1/bin" $PATH
-    set -x PATH "$HOME/.nvm/versions/node/v20.10.0/bin" $PATH
-    set -x PATH "$HOME/.nvm/versions/node/v22.4.1/bin" $PATH
+    # set -x PATH "$HOME/.nvm/versions/node/v18.12.1/bin" $PATH
+    # set -x PATH "$HOME/.nvm/versions/node/v20.10.0/bin" $PATH
+    # set -x PATH "$HOME/.nvm/versions/node/v22.4.1/bin" $PATH
     # Path for Anaconda
     set -x PATH "$HOME/anaconda3/bin" $PATH
     # Path for Laravel
@@ -91,9 +91,18 @@ end
 set --export BUN_INSTALL "$HOME/.bun"
 set --export PATH $BUN_INSTALL/bin $PATH
 
+# CUDA
+if test -d /usr/local/cuda/bin
+    fish_add_path /usr/local/cuda/bin
+end
+
+if test -d /usr/local/cuda/lib64
+    set -gx LD_LIBRARY_PATH /usr/local/cuda/lib64 $LD_LIBRARY_PATH
+end
+
 # >>> mamba initialize >>>
 # !! Contents within this block are managed by 'micromamba shell init' !!
-set -gx MAMBA_EXE "/usr/bin/micromamba"
-set -gx MAMBA_ROOT_PREFIX "/home/natzgun/.local/share/mamba"
-$MAMBA_EXE shell hook --shell fish --root-prefix $MAMBA_ROOT_PREFIX | source
+# set -gx MAMBA_EXE "/usr/bin/micromamba"
+# set -gx MAMBA_ROOT_PREFIX "/home/natzgun/.local/share/mamba"
+# $MAMBA_EXE shell hook --shell fish --root-prefix $MAMBA_ROOT_PREFIX | source
 # <<< mamba initialize <<<

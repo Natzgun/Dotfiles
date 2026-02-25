@@ -62,7 +62,7 @@
 
 (package! treesit-auto)
 
-(package! ccls)
+(package! glsl-mode)
 
 (package! company-tabnine)
 

@@ -26,7 +26,11 @@
                                         ;       doom-variable-pitch-font (font-spec :family "Ubuntu" :size 14))
 ;; (setq doom-font (font-spec :family "Maple Mono NF" :weight 'Regular :size 17))
 ;; (setq doom-font (font-spec :family "JetBrainsMono Nerd Font" :weight 'SemiBold :size 11.5))
-(setq doom-font (font-spec :family "IosevkaTerm Nerd Font" :weight 'Semibold :size 18))
+;; 
+;; Old Font
+;; (setq doom-font (font-spec :family "IosevkaTerm Nerd Font" :weight 'Semibold :size 18))
+(setq doom-font (font-spec :family "JetBrainsMono Nerd Font" :size 17 :weight 'regular))
+(setq doom-variable-pitch-font (font-spec :family "JetBrainsMono Nerd Font Propo" :size 17 :weight 'regular))
 
 ;; (setq doom-font (font-spec :family "FiraCode Nerd Font Mono" :size 12.5)
 ;;       doom-variable-pitch-font (font-spec :family "Noto Sans" :size 15))
@@ -49,7 +53,7 @@
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
 ;; (setq doom-theme 'doom-moonlight)
-(setq doom-theme 'doom-horizon)
+(setq doom-theme 'doom-one)
 ;; (add-to-list 'default-frame-alist '(alpha-background . 90))
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
@@ -106,33 +110,62 @@
 ;; Delete autosave WorkSpaces
 (setq +workspaces-autosave-when-idle nil)
 
+;;; config.el
+
+;; -------------------------------------------------------------------------
 ;; INDENTATION
+;; -------------------------------------------------------------------------
 
-(setq-default tab-width 4)
-(setq-default indent-tabs-mode nil)
+(setq-default tab-width 4
+              c-basic-offset 4
+              indent-tabs-mode nil)
 
-;; Indentation for c and c++
-(add-hook 'c-mode-hook
-          (lambda ()
-            (setq c-basic-offset 4)      ;; Indentación de 4 espacios
-            (c-set-style "k&r")))       ;; Estilo Kernighan & Ritchie
+(setq c-default-style "bsd") 
 
-;; Configuración para C++
-(add-hook 'c++-mode-hook
-          (lambda ()
-            (setq c-basic-offset 4)      ;; Indentación de 4 espacios
-            (c-set-style "stroustrup"))) ;; Estilo Stroustrup
-
-(after! lsp-mode
-  (setq lsp-enable-on-type-formatting nil)  ;; Desactiva el formato en tiempo real
-  (setq lsp-enable-indentation nil))        ;; Desactiva la indentación automática del LSP
+;; 3. DTRT (Do The Right Thing) Indent
+;; Si Doom no detecta un .editorconfig, intenta adivinar la indentación del archivo
+;; analizando el código existente. Esto ayuda en archivos sueltos.
+(use-package! dtrt-indent
+  :hook ((c-mode-common . dtrt-indent-mode)))
 
 
-;; (after! c-mode
-;;   (setq c-basic-offset 2))
+;; -------------------------------------------------------------------------
+;; CONFIGURACIÓN C/C++ Y GRAFICOS
+;; -------------------------------------------------------------------------
 
-;; (after! cpp-mode
-;;   (setq c-basic-offset 2))
+(after! cc-mode
+  ;; Mapeos extra para C++
+  (map! :map c++-mode-map
+        :localleader
+        "b" #'cmake-project-configure-project  ; Compilar con CMake
+        "r" #'cmake-project-run-project))      ; Ejecutar
+
+;; Soporte para Shaders (HLSL, GLSL, .shader)
+;; Asocia extensiones comunes de gráficos al modo GLSL
+(add-to-list 'auto-mode-alist '("\\.glsl\\'" . glsl-mode))
+(add-to-list 'auto-mode-alist '("\\.vert\\'" . glsl-mode))
+(add-to-list 'auto-mode-alist '("\\.frag\\'" . glsl-mode))
+(add-to-list 'auto-mode-alist '("\\.geom\\'" . glsl-mode))
+(add-to-list 'auto-mode-alist '("\\.compute\\'" . glsl-mode))
+(add-to-list 'auto-mode-alist '("\\.hlsl\\'" . glsl-mode)) ; HLSL tratado como GLSL (sintaxis similar)
+(add-to-list 'auto-mode-alist '("\\.shader\\'" . glsl-mode)) ; Unity shaders
+
+;; Configuración de LSP (Clangd)
+;; Optimizaciones para que vaya rápido en proyectos grandes (Motores de juegos)
+(after! lsp-clangd
+  (setq lsp-clients-clangd-args
+        '("-j=4" ;; Usar 4 hilos (ajusta según tu CPU)
+          "--background-index"
+          "--clang-tidy"
+          "--completion-style=detailed"
+          "--header-insertion=never"
+          "--header-insertion-decorators=0"))
+  (set-lsp-priority! 'clangd 1))
+
+;; Desactivar formato automático al escribir (puede ser molesto en C++)
+;; Pero permitir formato al guardar si existe un archivo .clang-format
+(setq +format-on-save-enabled-modes
+      '(not c-mode c++-mode))
 
 
 
@@ -354,3 +387,12 @@
 ;; (use-package treesit-auto
 ;;   :config
 ;;   (global-treesit-auto-mode))
+
+(after! org
+  (setq org-emphasis-alist
+        '(("*" (:foreground "#D79921" :weight bold))      ; Negrita en amarillo ambar
+          ("/" (:foreground "#98be65" :slant italic))     ; Cursiva en verde
+          ("_" (:foreground "#c678dd" :underline t))      ; Subrayado en violeta
+          ("=" (:foreground "#ff6c6b" :background "#3f444a")) ; Verbatim en rojo suave con fondo
+          ("~" (:foreground "#da8548")) ; Code en naranja con fondo
+          ("+" (:foreground "#5b6268" :strike-through t))))) ; Tachado en gris
