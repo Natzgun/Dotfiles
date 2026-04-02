@@ -390,9 +390,25 @@
 
 (after! org
   (setq org-emphasis-alist
-        '(("*" (:foreground "#D79921" :weight bold))      ; Negrita en amarillo ambar
+        '(("*" (:foreground "#FABD2F" :weight bold))      ; Negrita en amarillo claro
           ("/" (:foreground "#98be65" :slant italic))     ; Cursiva en verde
           ("_" (:foreground "#c678dd" :underline t))      ; Subrayado en violeta
           ("=" (:foreground "#ff6c6b" :background "#3f444a")) ; Verbatim en rojo suave con fondo
           ("~" (:foreground "#da8548")) ; Code en naranja con fondo
           ("+" (:foreground "#5b6268" :strike-through t))))) ; Tachado en gris
+
+;; Htmlize: resaltado de sintaxis en exportación HTML (org-roam-ui)
+(after! htmlize
+  (setq org-html-htmlize-output-type 'inline-css))
+
+;; Fix: org-modern interfiere con fontificado de bloques src
+(add-hook 'org-mode-hook
+          (lambda ()
+            (run-with-idle-timer 0.5 nil
+              (lambda () (font-lock-flush)))))
+
+;; MCP
+(use-package! mcp-server
+  :config
+  (setq mcp-server-emacs-tools-enabled 'all)
+  (mcp-server-start))

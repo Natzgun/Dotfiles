@@ -52,6 +52,7 @@
 ;; (package! copilot
 ;;   :recipe (:host github :repo "zerolfx/copilot.el" :files ("*.el" "dist")))
 
+(package! htmlize)
 (package! darkroom)
 
 (package! org-download)
@@ -70,3 +71,8 @@
 (package! org-roam-ui)
 
 (package! websocket)
+
+;; MCP
+(package! mcp-server
+  :recipe (:type git :host github :repo "rhblind/emacs-mcp-server"
+           :files ("*.el" "tools/*.el" "mcp-wrapper.py" "mcp-wrapper.sh")))
