@@ -168,36 +168,41 @@ Para GLSL, forzar glsl-mode clásico porque glsl-ts-mode no fontifica."
 
 ;; Buscar el ejecutable CMake del proyecto automáticamente
 (defun my/cmake-find-executable ()
-  "Busca el ejecutable generado por CMake en build/."
-  (when-let ((root (or (projectile-project-root) (vc-root-dir))))
-    (let ((project-name (file-name-nondirectory (directory-file-name root))))
-      (cl-loop for path in (list
-                            (format "%sbuild/src/%s" root project-name)
-                            (format "%sbuild/%s" root project-name)
-                            (format "%scmake-build-debug/src/%s" root project-name)
-                            (format "%scmake-build-debug/%s" root project-name))
-               when (file-executable-p path)
-               return path))))
+  "Busca el ejecutable generado por CMake en build/, ignorando archivos internos de CMake."
+  (when-let ((root (or (my/find-cmake-root) (projectile-project-root) (vc-root-dir))))
+    (cl-loop for build-dir in '("build" "cmake-build-debug" "cmake-build-release" "cmake-build")
+             for full-dir = (expand-file-name build-dir root)
+             when (file-directory-p full-dir)
+             thereis (cl-loop for f in (directory-files-recursively full-dir "" nil)
+                              when (and (file-executable-p f)
+                                        (not (file-directory-p f))
+                                        (not (string-match-p "CMakeFiles\\|cmake_install\\|\\.cmake\\|\\.o$\\|\\.a$" f)))
+                              return f))))
 
 (defun my/cmake-run ()
-  "Ejecuta el binario CMake del proyecto."
+  "Ejecuta el binario CMake del proyecto en un vterm popup."
   (interactive)
   (if-let ((exe (my/cmake-find-executable)))
-      (let ((default-directory (file-name-directory exe)))
-        (compile exe))
-    (message "No se encontró el ejecutable. ¿Compilaste primero? (SPC , b)")))
+      (let* ((buf-name "*cmake-run*")
+             (default-directory (file-name-directory exe)))
+        (if-let ((buf (get-buffer buf-name)))
+            ;; Si ya existe, re-usar y re-ejecutar
+            (progn
+              (pop-to-buffer buf)
+              (vterm-send-C-c)
+              (vterm-send-string (concat exe "\n")))
+          ;; Si no existe, crear nuevo vterm popup
+          (let ((buf (vterm buf-name)))
+            (vterm-send-string (concat exe "\n")))))
+    (message "No se encontró el ejecutable. Compila primero con SPC , b")))
 
-(defun my/cmake-build-and-run ()
-  "Compila y ejecuta el proyecto CMake."
-  (interactive)
-  (let ((default-directory (or (projectile-project-root) (vc-root-dir) default-directory)))
-    (compile "cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -B build -S . && cmake --build build && cmake --build build --target all"
-             nil)
-    ;; Nota: usa SPC , r después para ejecutar
-    ))
+(set-popup-rule! "^\\*cmake-run\\*" :side 'bottom :size 0.35 :quit 'current :select t :ttl nil)
+
+;; Usar fish como shell para vterm
+(setq vterm-shell "/usr/bin/fish")
 
 (after! cc-mode
-  ;; SPC , b = compilar, SPC , r = ejecutar, SPC , R = compilar + ejecutar
+  ;; SPC m b = compilar, SPC m r = ejecutar
   (map! :map c++-mode-map
         :localleader
         "b" #'project-compile
@@ -206,6 +211,18 @@ Para GLSL, forzar glsl-mode clásico porque glsl-ts-mode no fontifica."
         :localleader
         "b" #'project-compile
         "r" #'my/cmake-run))
+
+;; Keybindings para modos *-ts-mode (Emacs 30)
+(map! :after cc-mode
+      :map c++-ts-mode-map
+      :localleader
+      "b" #'project-compile
+      "r" #'my/cmake-run)
+(map! :after cc-mode
+      :map c-ts-mode-map
+      :localleader
+      "b" #'project-compile
+      "r" #'my/cmake-run)
 
 ;; Soporte para Shaders (HLSL, GLSL, .shader)
 (add-to-list 'auto-mode-alist '("\\.glsl\\'" . glsl-mode))
@@ -226,6 +243,10 @@ Para GLSL, forzar glsl-mode clásico porque glsl-ts-mode no fontifica."
     :major-modes '(glsl-mode glsl-ts-mode))))
 
 (add-hook 'glsl-mode-hook #'lsp!)
+(add-hook 'glsl-mode-hook
+          (lambda ()
+            (setq-local tab-width 4
+                        c-basic-offset 4)))
 
 ;; -------------------------------------------------------------------------
 ;; LSP (Clangd) + CMake compile_commands.json
@@ -295,10 +316,10 @@ Para GLSL, forzar glsl-mode clásico porque glsl-ts-mode no fontifica."
 (after! lsp-mode
   (add-to-list 'lsp-disabled-clients 'cmakels))
 
-;; Desactivar formato automático al escribir en C/C++
-;; (usa .clang-format para formato manual con SPC c f)
-(setq +format-on-save-enabled-modes
-      '(not c-mode c++-mode c-ts-mode c++-ts-mode))
+;; Desactivar formato automático de LSP al guardar
+;; (usa SPC c f para formatear manualmente)
+(after! lsp-mode
+  (setq lsp-before-save-edits nil))
 
 
 
