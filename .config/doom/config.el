@@ -116,56 +116,189 @@
 ;; INDENTATION
 ;; -------------------------------------------------------------------------
 
-(setq-default tab-width 4
-              c-basic-offset 4
+;; Default: 2 espacios. dtrt-indent y editorconfig ajustan por proyecto.
+(setq-default tab-width 2
+              c-basic-offset 2
               indent-tabs-mode nil)
 
-(setq c-default-style "bsd") 
+(setq c-default-style "bsd")
 
-;; 3. DTRT (Do The Right Thing) Indent
-;; Si Doom no detecta un .editorconfig, intenta adivinar la indentación del archivo
-;; analizando el código existente. Esto ayuda en archivos sueltos.
+;; dtrt-indent: adivina la indentación analizando el archivo existente.
+;; Si el proyecto usa 4 espacios, lo detecta automáticamente.
 (use-package! dtrt-indent
-  :hook ((c-mode-common . dtrt-indent-mode)))
+  :hook ((c-mode   . dtrt-indent-mode)
+         (c++-mode . dtrt-indent-mode)))
+
+;; Yasnippet: usar indentación fija para que los snippets respeten
+;; el offset del buffer actual, no re-indenten con c-basic-offset.
+(after! yasnippet
+  (add-hook 'c-mode-common-hook
+            (lambda () (setq-local yas-indent-line 'fixed))))
 
 
 ;; -------------------------------------------------------------------------
 ;; CONFIGURACIÓN C/C++ Y GRAFICOS
 ;; -------------------------------------------------------------------------
 
+;; -------------------------------------------------------------------------
+;; Emacs 30 + Doom tree-sitter fix
+;; -------------------------------------------------------------------------
+;; Emacs 30 auto-promueve c-mode→c-ts-mode, c++-mode→c++-ts-mode, etc.
+;; cuando los grammars de tree-sitter están instalados. Pero Doom no
+;; engancha font-lock ni lsp! en los modos *-ts-mode. Arreglamos aquí:
+
+;; Fix para Emacs 30: los modos *-ts-mode no ejecutan hooks de Doom.
+;; Usamos find-file-hook que sí corre después de abrir el archivo.
+(defun my/fix-ts-modes ()
+  "Activar font-lock y LSP en modos *-ts-mode que Doom no maneja.
+Para GLSL, forzar glsl-mode clásico porque glsl-ts-mode no fontifica."
+  (cond
+   ;; GLSL: revertir a modo clásico (glsl-ts-mode no tiene buen fontificado)
+   ((eq major-mode 'glsl-ts-mode)
+    (let ((inhibit-message t))
+      (glsl-mode)
+      (font-lock-mode 1)))
+   ;; C/C++ ts modes: asegurar font-lock + lsp + indentación
+   ((derived-mode-p 'c-ts-base-mode)
+    (unless font-lock-mode (font-lock-mode 1))
+    (setq-local c-ts-mode-indent-offset c-basic-offset)
+    (unless (bound-and-true-p lsp-mode) (lsp!)))))
+
+(add-hook 'find-file-hook #'my/fix-ts-modes)
+
+;; Buscar el ejecutable CMake del proyecto automáticamente
+(defun my/cmake-find-executable ()
+  "Busca el ejecutable generado por CMake en build/."
+  (when-let ((root (or (projectile-project-root) (vc-root-dir))))
+    (let ((project-name (file-name-nondirectory (directory-file-name root))))
+      (cl-loop for path in (list
+                            (format "%sbuild/src/%s" root project-name)
+                            (format "%sbuild/%s" root project-name)
+                            (format "%scmake-build-debug/src/%s" root project-name)
+                            (format "%scmake-build-debug/%s" root project-name))
+               when (file-executable-p path)
+               return path))))
+
+(defun my/cmake-run ()
+  "Ejecuta el binario CMake del proyecto."
+  (interactive)
+  (if-let ((exe (my/cmake-find-executable)))
+      (let ((default-directory (file-name-directory exe)))
+        (compile exe))
+    (message "No se encontró el ejecutable. ¿Compilaste primero? (SPC , b)")))
+
+(defun my/cmake-build-and-run ()
+  "Compila y ejecuta el proyecto CMake."
+  (interactive)
+  (let ((default-directory (or (projectile-project-root) (vc-root-dir) default-directory)))
+    (compile "cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -B build -S . && cmake --build build && cmake --build build --target all"
+             nil)
+    ;; Nota: usa SPC , r después para ejecutar
+    ))
+
 (after! cc-mode
-  ;; Mapeos extra para C++
+  ;; SPC , b = compilar, SPC , r = ejecutar, SPC , R = compilar + ejecutar
   (map! :map c++-mode-map
         :localleader
-        "b" #'cmake-project-configure-project  ; Compilar con CMake
-        "r" #'cmake-project-run-project))      ; Ejecutar
+        "b" #'project-compile
+        "r" #'my/cmake-run)
+  (map! :map c-mode-map
+        :localleader
+        "b" #'project-compile
+        "r" #'my/cmake-run))
 
 ;; Soporte para Shaders (HLSL, GLSL, .shader)
-;; Asocia extensiones comunes de gráficos al modo GLSL
 (add-to-list 'auto-mode-alist '("\\.glsl\\'" . glsl-mode))
 (add-to-list 'auto-mode-alist '("\\.vert\\'" . glsl-mode))
 (add-to-list 'auto-mode-alist '("\\.frag\\'" . glsl-mode))
 (add-to-list 'auto-mode-alist '("\\.geom\\'" . glsl-mode))
 (add-to-list 'auto-mode-alist '("\\.compute\\'" . glsl-mode))
-(add-to-list 'auto-mode-alist '("\\.hlsl\\'" . glsl-mode)) ; HLSL tratado como GLSL (sintaxis similar)
-(add-to-list 'auto-mode-alist '("\\.shader\\'" . glsl-mode)) ; Unity shaders
+(add-to-list 'auto-mode-alist '("\\.hlsl\\'" . glsl-mode))
+(add-to-list 'auto-mode-alist '("\\.shader\\'" . glsl-mode))
 
-;; Configuración de LSP (Clangd)
-;; Optimizaciones para que vaya rápido en proyectos grandes (Motores de juegos)
+;; LSP para GLSL: glsl_analyzer
+(after! lsp-mode
+  (lsp-register-client
+   (make-lsp-client
+    :new-connection (lsp-stdio-connection '("glsl_analyzer"))
+    :activation-fn (lsp-activate-on "glsl")
+    :server-id 'glsl-analyzer
+    :major-modes '(glsl-mode glsl-ts-mode))))
+
+(add-hook 'glsl-mode-hook #'lsp!)
+
+;; -------------------------------------------------------------------------
+;; LSP (Clangd) + CMake compile_commands.json
+;; -------------------------------------------------------------------------
+
 (after! lsp-clangd
+  ;; Args base para clangd
   (setq lsp-clients-clangd-args
-        '("-j=4" ;; Usar 4 hilos (ajusta según tu CPU)
+        '("-j=4"
           "--background-index"
           "--clang-tidy"
           "--completion-style=detailed"
           "--header-insertion=never"
           "--header-insertion-decorators=0"))
-  (set-lsp-priority! 'clangd 1))
+  (set-lsp-priority! 'clangd 1)
 
-;; Desactivar formato automático al escribir (puede ser molesto en C++)
-;; Pero permitir formato al guardar si existe un archivo .clang-format
+  ;; Buscar compile_commands.json en la raíz o en subdirectorios de build.
+  ;; Compatible con cmake-tools de Neovim (genera en raíz) y CMake manual.
+  (defun my/find-compile-commands-dir ()
+    "Busca compile_commands.json en la raíz del proyecto y directorios de build comunes."
+    (when-let ((project-root (or (my/find-cmake-root)
+                                 (projectile-project-root)
+                                 (vc-root-dir))))
+      (cl-loop for dir in '("." "build" "cmake-build-debug" "cmake-build-release"
+                            "cmake-build" "out/build" "out" "builddir")
+               for full = (expand-file-name dir project-root)
+               when (file-exists-p (expand-file-name "compile_commands.json" full))
+               return full)))
+
+  ;; Pasar --compile-commands-dir a clangd para que encuentre el compile_commands.json
+  (add-hook 'c-mode-hook #'my/setup-clangd-compile-commands)
+  (add-hook 'c++-mode-hook #'my/setup-clangd-compile-commands)
+  (add-hook 'c-ts-mode-hook #'my/setup-clangd-compile-commands)
+  (add-hook 'c++-ts-mode-hook #'my/setup-clangd-compile-commands)
+
+  (defun my/setup-clangd-compile-commands ()
+    (when-let ((dir (my/find-compile-commands-dir)))
+      (setq-local lsp-clients-clangd-args
+                  (append lsp-clients-clangd-args
+                          (list (concat "--compile-commands-dir=" dir)))))))
+
+;; CMake: auto-generar compile_commands.json al configurar
+(after! cmake-mode
+  (setq cmake-compile-command "cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -B build -S ."))
+
+;; Detectar CMakeLists.txt buscando hacia arriba desde el archivo actual
+(defun my/find-cmake-root ()
+  "Busca el directorio más cercano hacia arriba que contenga CMakeLists.txt con project()."
+  (when-let ((dir (locate-dominating-file
+                   (or buffer-file-name default-directory)
+                   "CMakeLists.txt")))
+    (file-name-as-directory (expand-file-name dir))))
+
+(defun my/set-cmake-compile-command ()
+  "Si el proyecto tiene CMakeLists.txt, usar cmake como compile-command."
+  (when-let ((root (my/find-cmake-root)))
+    (setq-local compile-command
+                (format "cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -B %sbuild -S %s && cmake --build %sbuild"
+                        root root root))))
+
+(add-hook 'c-mode-hook #'my/set-cmake-compile-command)
+(add-hook 'c++-mode-hook #'my/set-cmake-compile-command)
+(add-hook 'c-ts-mode-hook #'my/set-cmake-compile-command)
+(add-hook 'c++-ts-mode-hook #'my/set-cmake-compile-command)
+
+;; Desactivar cmake-language-server (incompatible con Python 3.14)
+(after! lsp-mode
+  (add-to-list 'lsp-disabled-clients 'cmakels))
+
+;; Desactivar formato automático al escribir en C/C++
+;; (usa .clang-format para formato manual con SPC c f)
 (setq +format-on-save-enabled-modes
-      '(not c-mode c++-mode))
+      '(not c-mode c++-mode c-ts-mode c++-ts-mode))
 
 
 
