@@ -1,0 +1,437 @@
+#+TITLE: Doom Emacs - Setup & Reference
+#+AUTHOR: Natzgun
+#+DATE: 2026-04-02
+#+PROPERTY: header-args :tangle no
+#+STARTUP: overview
+
+* Informacion General
+
+| Campo       | Valor                          |
+|-------------+--------------------------------|
+| Emacs       | 30.2                           |
+| Doom        | 3.0.0-pre                      |
+| OS          | Fedora 43 (CachyOS kernel)     |
+| Shell       | Fish (tambien en vterm)        |
+| Tema        | =doom-one=                     |
+| Fuente      | JetBrainsMono Nerd Font (17pt) |
+| Lineas      | Relativas                      |
+| Workspaces  | Auto-save desactivado          |
+
+** Archivos de configuracion
+
+| Archivo          | Descripcion                                     |
+|------------------+-------------------------------------------------|
+| =init.el=        | Modulos activos de Doom (requiere =doom sync=)  |
+| =config.el=      | Configuracion personal (no requiere sync)        |
+| =packages.el=    | Paquetes adicionales (requiere =doom sync=)      |
+
+** Comandos utiles
+
+#+begin_src shell
+doom sync       # Sincronizar despues de cambios en init.el o packages.el
+doom doctor     # Diagnosticar problemas
+doom upgrade    # Actualizar Doom
+#+end_src
+
+* Keybindings Generales de Doom
+
+** Navegacion basica
+
+| Tecla         | Accion                        |
+|---------------+-------------------------------|
+| =SPC .=       | Buscar archivo                |
+| =SPC f f=     | Buscar archivo (find-file)    |
+| =SPC f r=     | Archivos recientes            |
+| =SPC b b=     | Cambiar buffer                |
+| =SPC b k=     | Cerrar buffer                 |
+| =SPC b m=     | Ver *Messages* (logs)         |
+| =SPC b B=     | Lista todos los buffers       |
+| =SPC ,=       | Switch buffer (workspace)     |
+| =SPC p p=     | Cambiar proyecto              |
+| =SPC p f=     | Buscar archivo en proyecto    |
+| =SPC s p=     | Buscar texto en proyecto      |
+| =SPC s s=     | Buscar texto en buffer        |
+
+** Ventanas
+
+| Tecla         | Accion                        |
+|---------------+-------------------------------|
+| =SPC w v=     | Split vertical                |
+| =SPC w s=     | Split horizontal              |
+| =SPC w w=     | Cambiar entre ventanas        |
+| =SPC w q=     | Cerrar ventana                |
+| =SPC w ==     | Igualar tamano de ventanas    |
+| =C-w h/j/k/l= | Moverse entre ventanas       |
+
+** Terminal
+
+| Tecla         | Accion                              |
+|---------------+-------------------------------------|
+| =SPC o t=     | Terminal popup abajo (toggle)       |
+| =SPC o T=     | Terminal en buffer completo          |
+
+vterm usa Fish como shell (configurado con =vterm-shell=).
+
+** Git (Magit)
+
+| Tecla         | Accion                        |
+|---------------+-------------------------------|
+| =SPC g g=     | Magit status                  |
+| =SPC g b=     | Magit blame                   |
+| =SPC g l=     | Magit log                     |
+| =SPC g f=     | Magit fetch                   |
+
+** Ayuda
+
+| Tecla         | Accion                          |
+|---------------+---------------------------------|
+| =SPC h d h=   | Documentacion de Doom           |
+| =SPC h d m=   | Documentacion de modulo         |
+| =SPC h k=     | Describe key                    |
+| =SPC h f=     | Describe function               |
+| =SPC h v=     | Describe variable               |
+| =K=           | Documentacion del simbolo       |
+
+** Workspaces
+
+| Tecla         | Accion                        |
+|---------------+-------------------------------|
+| =SPC TAB n=   | Nuevo workspace               |
+| =SPC TAB d=   | Eliminar workspace            |
+| =SPC TAB TAB= | Cambiar workspace             |
+| =SPC TAB 1-9= | Ir a workspace N              |
+
+* Indentacion
+
+** Defaults globales
+
+| Variable           | Valor | Descripcion                          |
+|--------------------+-------+--------------------------------------|
+| =tab-width=        |     2 | Ancho visual de un tab               |
+| =c-basic-offset=   |     2 | Offset de indentacion para C/C++     |
+| =indent-tabs-mode= |   nil | Siempre usa espacios, nunca tabs     |
+| =c-default-style=  | "bsd" | Estilo BSD (Allman) para llaves en C |
+
+** Indentacion por lenguaje
+
+| Lenguaje | Espacios | Nota                                   |
+|----------+----------+----------------------------------------|
+| C/C++    |        2 | Default, dtrt-indent detecta por proyecto |
+| GLSL     |        4 | Estandar de la industria grafica       |
+
+** Deteccion automatica por proyecto
+
+La indentacion se ajusta automaticamente segun el proyecto:
+
+1. *editorconfig* (modulo activo en =init.el=): Lee =.editorconfig= del proyecto.
+2. *dtrt-indent*: Si no hay =.editorconfig=, analiza el archivo y adivina (ej. si el proyecto usa 4 espacios, ajusta a 4).
+
+** Snippets (Yasnippet)
+
+=yas-indent-line= configurado como ='fixed= en modos C/C++.
+Esto evita que los snippets re-indenten con =c-basic-offset=.
+
+** Formato (format-on-save)
+
+El formato automatico al guardar esta *desactivado* globalmente (=format= sin =+onsave= en init.el).
+Ademas =lsp-before-save-edits= esta en =nil= para evitar que LSP formatee al guardar.
+
+Para formatear manualmente:
+
+| Tecla         | Accion                     |
+|---------------+----------------------------|
+| =SPC c f=     | Formatear buffer completo  |
+| =SPC c F=     | Formatear region           |
+
+Para C/C++ usa =.clang-format=. Para GLSL usa =~/.glsl_analyzer.json=.
+
+* Emacs 30 + Tree-sitter
+
+Emacs 30 auto-promueve =c-mode= a =c-ts-mode= y =c++-mode= a =c++-ts-mode= cuando los grammars de tree-sitter estan instalados. Doom no engancha =font-lock= ni =lsp!= correctamente en estos modos.
+
+Fix: =my/fix-ts-modes= en =find-file-hook= que:
+- Activa =font-lock-mode= y =lsp!= en C/C++ ts modes
+- Sincroniza =c-ts-mode-indent-offset= con =c-basic-offset=
+- Revierte =glsl-ts-mode= a =glsl-mode= clasico (fontificado roto)
+
+*Importante:* Los keybindings deben estar en ambos mapas (=c++-mode-map= y =c++-ts-mode-map=).
+
+* C/C++
+
+** Modulos Doom
+
+#+begin_src emacs-lisp
+(cc +lsp +tree-sitter)  ; en init.el
+cmake
+#+end_src
+
+** LSP: Clangd
+
+#+begin_src shell
+sudo dnf install clang-tools-extra
+#+end_src
+
+*** Argumentos de clangd
+
+| Argumento                        | Descripcion                    |
+|----------------------------------+--------------------------------|
+| =-j=4=                           | 4 hilos                        |
+| =--background-index=             | Indexar en segundo plano        |
+| =--clang-tidy=                   | Diagnosticos de clang-tidy     |
+| =--completion-style=detailed=    | Autocompletado detallado        |
+| =--header-insertion=never=       | No insertar headers automaticos |
+
+** CMake: compile_commands.json
+
+=my/find-compile-commands-dir= busca =compile_commands.json= en:
+=.= > =build/= > =cmake-build-debug/= > =cmake-build-release/= > =out/= > =builddir/=
+
+Pasa =--compile-commands-dir= a clangd automaticamente.
+
+** CMake: Compilar y Ejecutar
+
+=my/set-cmake-compile-command= detecta =CMakeLists.txt= buscando hacia arriba con =locate-dominating-file=.
+Usa rutas absolutas para que funcione desde cualquier subdirectorio.
+
+=my/cmake-find-executable= busca el binario en =build/= y =cmake-build-*/=, ignorando archivos internos de CMake.
+
+=my/cmake-run= ejecuta el binario en un vterm popup.
+
+** Copiar assets al build (CMakeLists.txt)
+
+Para que rutas relativas como ="assets/texture.png"= funcionen sin importar desde donde se ejecute:
+
+#+begin_src cmake
+add_custom_command(TARGET MiApp POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    ${CMAKE_SOURCE_DIR}/assets $<TARGET_FILE_DIR:MiApp>/assets)
+#+end_src
+
+** Keybindings C/C++
+
+| Tecla         | Accion                                     |
+|---------------+--------------------------------------------|
+| =SPC m b=     | Compilar (=project-compile=)               |
+| =SPC m r=     | Ejecutar binario en vterm popup            |
+| =SPC c c=     | Compilar (=project-compile=)               |
+| =SPC c f=     | Formatear buffer (usa =.clang-format=)     |
+| =SPC c F=     | Formatear region                           |
+| =gd=          | Ir a definicion                            |
+| =gD=          | Ir a declaracion                           |
+| =K=           | Hover / documentacion                      |
+| =gr=          | Ver referencias                            |
+| =SPC c a=     | Code actions                               |
+| =SPC c r=     | Renombrar simbolo                          |
+| =SPC c d=     | Diagnosticos del buffer                    |
+| =SPC c D=     | Diagnosticos del proyecto                  |
+| =SPC c x=     | Lista de errores (flycheck)                |
+| =] d=         | Siguiente diagnostico                      |
+| =[ d=         | Diagnostico anterior                       |
+
+** cmake-language-server
+
+Desactivado: incompatible con Python 3.14 (=asyncio.get_child_watcher= removido).
+
+* GLSL (Shaders)
+
+** Modo y extensiones
+
+Usa =glsl-mode= clasico. Indentacion: 4 espacios.
+
+| Extension    | Tipo            |
+|--------------+-----------------|
+| =.glsl=      | GLSL generico   |
+| =.vert=      | Vertex shader   |
+| =.frag=      | Fragment shader |
+| =.geom=      | Geometry shader |
+| =.compute=   | Compute shader  |
+| =.hlsl=      | HLSL            |
+| =.shader=    | Unity shader    |
+
+** LSP: glsl_analyzer
+
+#+begin_src shell
+sudo dnf install glsl-analyzer
+#+end_src
+
+Provee: autocompletado, diagnosticos, go-to-definition, hover docs, formatter.
+
+Config del formatter en =~/.glsl_analyzer.json=:
+
+#+begin_src json
+{
+  "tabSize": 4
+}
+#+end_src
+
+** Keybindings GLSL
+
+Mismos que C/C++ via LSP (=gd=, =K=, =SPC c f=, etc).
+
+Adicionales de =glsl-mode=:
+
+| Tecla                     | Accion                            |
+|---------------------------+-----------------------------------|
+| =S-iso-lefttab=           | Alternar entre =.vert= y =.frag= |
+| =M-x glsl-find-man-page= | Consultar funcion built-in        |
+
+* Org Mode
+
+** Keybindings generales de Org
+
+| Tecla         | Accion                              |
+|---------------+-------------------------------------|
+| =SPC m e=     | Exportar (HTML, PDF, etc)           |
+| =SPC m t=     | Cambiar estado TODO                 |
+| =SPC m d=     | Deadline                            |
+| =SPC m s=     | Schedule                            |
+| =SPC m q=     | Setear tags                         |
+| =SPC m p=     | Setear prioridad                    |
+| =SPC m i=     | Insertar (heading, item, etc)       |
+| =SPC m l=     | Insertar/editar link                |
+| =SPC m '=     | Editar bloque src                   |
+| =TAB=         | Fold/unfold heading                 |
+| =S-TAB=       | Fold/unfold todo                    |
+| =M-RET=       | Nuevo heading al mismo nivel        |
+| =M-S-RET=     | Nuevo TODO heading                  |
+| =M-h/l=       | Promover/demover heading            |
+| =M-j/k=       | Mover heading arriba/abajo          |
+| =C-c C-c=     | Ejecutar bloque src / toggle checkbox |
+| =C-c C-t=     | Cambiar estado TODO                 |
+| =C-c C-d=     | Setear deadline                     |
+| =C-c C-s=     | Setear schedule                     |
+
+** Org Agenda
+
+| Tecla         | Accion                              |
+|---------------+-------------------------------------|
+| =SPC o a a=   | Abrir agenda                        |
+| =SPC o a v=   | Vista personalizada                 |
+| =SPC o a t=   | Lista de TODOs                      |
+
+Vista personalizada (=v=):
+1. Tareas alta prioridad (A) - rojo
+2. Tareas media prioridad (B) - verde
+3. Tareas baja prioridad (C) - violeta
+4. Tareas con =customtag=
+5. Agenda semanal
+6. Todas las tareas
+
+Archivo de agenda: =~/ORG/OrgNotes/AgendaORG/Agenda2025B.org=
+
+** Org Roam
+
+Directorio: =~/ORG/RoamNotes/=
+
+*** Keybindings Org Roam
+
+| Tecla         | Accion                             |
+|---------------+------------------------------------|
+| =C-c n f=     | Buscar nodo                        |
+| =C-c n i=     | Insertar link a nodo               |
+| =C-c n l=     | Toggle buffer de backlinks         |
+| =C-c n g=     | Ver grafo                          |
+| =C-c n c=     | Capturar nota nueva                |
+| =C-c n j=     | Captura diaria (dailies)           |
+| =C-c i=       | Completion at point (en org)       |
+
+*** Org Roam UI
+
+Interfaz web para visualizar el grafo de notas.
+
+| Comando                   | Accion                       |
+|---------------------------+------------------------------|
+| =M-x org-roam-ui-mode=   | Abrir UI en navegador        |
+
+Config: sync tema, follow cursor, update on save.
+
+** Org Download (imagenes)
+
+Drag & drop de imagenes en archivos org.
+
+| Variable                  | Valor             |
+|---------------------------+-------------------|
+| =org-download-method=     | =directory=       |
+| =org-download-image-dir=  | =./images=        |
+| =org-download-timestamp=  | =%Y%m%d-%H%M%S_= |
+
+** Org Emphasis (colores personalizados)
+
+| Markup     | Estilo                            |
+|------------+-----------------------------------|
+| =*bold*=   | Amarillo claro (#FABD2F), negrita |
+| =/italic/= | Verde (#98be65), cursiva          |
+| =_under_=  | Violeta (#c678dd), subrayado      |
+| ===verb==  | Rojo (#ff6c6b) con fondo gris     |
+| =~code~=   | Naranja (#da8548)                 |
+| =+strike+= | Gris (#5b6268), tachado          |
+
+** LaTeX
+
+| Variable           | Valor        |
+|--------------------+--------------|
+| =+latex-viewers=   | =pdf-tools=  |
+| =lsp-tex-server=   | =digestif=   |
+
+Modulos: =+cdlatex +latexmk +lsp +fold=
+
+Clase personalizada =templateEPCC= registrada para exportacion.
+
+* Treemacs
+
+| Tecla         | Accion                        |
+|---------------+-------------------------------|
+| =SPC o p=     | Toggle Treemacs               |
+| =SPC o P=     | Buscar archivo en Treemacs    |
+
+Sigue automaticamente el proyecto actual con =treemacs-project-follow-mode=.
+
+* Dependencias del sistema
+
+#+begin_src shell
+# C/C++ LSP
+sudo dnf install clang-tools-extra
+
+# GLSL LSP
+sudo dnf install glsl-analyzer
+
+# cmake-language-server (NO FUNCIONA con Python 3.14)
+# pipx install cmake-language-server  # desactivado
+#+end_src
+
+* Paquetes adicionales (packages.el)
+
+| Paquete          | Uso                              |
+|------------------+----------------------------------|
+| =glsl-mode=      | Modo GLSL con resaltado completo |
+| =darkroom=        | Modo escritura sin distracciones |
+| =org-download=    | Drag & drop imagenes en Org      |
+| =org-roam-ui=     | Visualizacion grafo Org Roam     |
+| =htmlize=         | Exportacion HTML con sintaxis    |
+| =gruvbox-theme=   | Tema alternativo                 |
+| =treesit-auto=    | Auto-instalar grammars treesit   |
+| =company-tabnine= | Autocompletado con IA            |
+| =mcp-server=      | MCP para integracion con Claude  |
+
+* MCP (Model Context Protocol)
+
+Permite a Claude Code interactuar directamente con Emacs via =eval-elisp= y =get-diagnostics=.
+
+Para iniciar: =M-x mcp-server-start=
+
+Para permitir funciones avanzadas (necesario para debugging con Claude):
+
+#+begin_src emacs-lisp
+M-: (setq mcp-server-security-allowed-dangerous-functions
+      '(with-current-buffer find-file require compile revert-buffer kill-buffer))
+#+end_src
+
+* Focus Mode (Darkroom)
+
+Modo de escritura sin distracciones.
+
+| Funcion                   | Accion            |
+|---------------------------+-------------------|
+| =dw/toggle-focus-mode=    | Toggle focus mode |
+| =dw/enter-focus-mode=     | Entrar            |
+| =dw/leave-focus-mode=     | Salir             |
